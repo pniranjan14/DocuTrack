@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Console | DocuTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- INHERITED VARIABLES --- */
+        :root {
+            --bg-deep: #020408;
+            --bg-panel: #0d1117; 
+            --accent-primary: #00f2ff; 
+            --accent-secondary: #7000ff;
+            --accent-success: #00ff9d;
+            --accent-warning: #ffb800;
+            --accent-danger: #ff4b4b;
+            --text-white: #e6edf3;
+            --text-gray: #8b949e;
+            --border-color: #30363d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-white);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            height: 70px;
+            background: rgba(2, 4, 8, 0.9);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .logo { font-family: 'Space Grotesk'; font-weight: 700; font-size: 1.25rem; color: #fff; text-decoration: none; }
+        .logo span { color: var(--accent-secondary); }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            display: flex; align-items: center; gap: 8px;
+            transition: color 0.3s;
+        }
+        .back-link:hover { color: #fff; }
+
+        /* --- SPLIT LAYOUT --- */
+        .workspace-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            flex: 1;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+
+        /* --- LEFT: DOCUMENT VIEWER --- */
+        .doc-viewer {
+            background: #161b22;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .viewer-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;
+        }
+
+        .file-frame {
+            flex: 1;
+            background: #000;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gray);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Simulated PDF Viewer Look */
+        .pdf-placeholder {
+            text-align: center;
+        }
+        .pdf-placeholder h3 { color: #fff; margin-bottom: 0.5rem; }
+
+        /* --- RIGHT: CONTROL PANEL --- */
+        .control-panel {
+            background: var(--bg-panel);
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Sections */
+        .panel-section { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+        .panel-section:last-child { border-bottom: none; }
+        
+        .section-label {
+            text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; color: var(--text-gray); margin-bottom: 1rem; font-weight: 700;
+        }
+
+        /* Student Mini Profile */
+        .student-mini { display: flex; align-items: center; gap: 15px; }
+        .mini-avatar {
+            width: 45px; height: 45px;
+            background: linear-gradient(135deg, var(--accent-primary), #0055ff);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000;
+        }
+
+        /* Metadata Grid */
+        .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .meta-item label { display: block; font-size: 0.75rem; color: var(--text-gray); margin-bottom: 4px; }
+        .meta-item span { font-family: 'Space Grotesk'; font-size: 0.95rem; color: #fff; }
+
+        /* Action Form */
+        .remarks-box {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Outfit';
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 1rem;
+        }
+        .remarks-box:focus { outline: none; border-color: var(--accent-secondary); }
+
+        /* Buttons */
+        .btn-approve {
+            width: 100%; padding: 12px; background: var(--accent-success); color: #000; border: none;
+            border-radius: 6px; font-weight: 700; cursor: pointer; margin-bottom: 10px; font-family: 'Space Grotesk';
+            transition: all 0.2s;
+        }
+        .btn-approve:hover { box-shadow: 0 0 15px rgba(0, 255, 157, 0.4); }
+
+        .btn-reject {
+            width: 100%; padding: 12px; background: transparent; color: var(--accent-danger); 
+            border: 1px solid var(--accent-danger); border-radius: 6px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-reject:hover { background: rgba(255, 75, 75, 0.1); }
+
+        /* Security Tag */
+        .scan-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(0, 242, 255, 0.1); color: var(--accent-primary);
+            padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;
+        }
+
+        /* Status badge */
+        .badge {
+            padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        }
+        .badge-pending { background: rgba(255, 184, 0, 0.1); color: var(--accent-warning); }
+        .badge-approved { background: rgba(0, 255, 157, 0.1); color: var(--accent-success); }
+        .badge-rejected { background: rgba(255, 75, 75, 0.1); color: var(--accent-danger); }
+
+        /* Messages */
+        .messages {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+        .messages.success {
+            background: rgba(0, 255, 157, 0.1);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            color: var(--accent-success);
+        }
+        .messages.error {
+            background: rgba(255, 75, 75, 0.1);
+            border: 1px solid rgba(255, 75, 75, 0.3);
+            color: var(--accent-danger);
+        }
+
+        @media (max-width: 900px) {
+            .workspace-container { grid-template-columns: 1fr; overflow-y: auto; height: auto; }
+            .doc-viewer { height: 500px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-inner">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a href="{% url 'index' %}" class="logo">Docu<span>Track.</span></a>
+                <span style="color: var(--border-color);">|</span>
+                <a href="{% url 'faculty_dashboard' %}" class="back-link">← Back to Console</a>
+            </div>
+            
+            <div style="color: var(--text-gray); font-size: 0.9rem;">
+                Viewing Submission #{{ document.id }}
+            </div>
+        </div>
+    </nav>
+
+    <div class="workspace-container">
+        
+        <div class="doc-viewer">
+            <div class="viewer-header">
+                <div>
+                    <h2 style="font-family: 'Space Grotesk'; font-size: 1.2rem;">{{ document.title }}</h2>
+                    <span class="scan-tag">✓ Malware Scan Passed</span>
+                </div>
+                <a href="{{ document.file.url }}" download style="background:transparent; border:1px solid var(--border-color); color:var(--text-white); padding:6px 12px; border-radius:4px; cursor:pointer; text-decoration:none;">Download Original</a>
+            </div>
+
+            <div class="file-frame">
+                {% if document.file %}
+                    <!-- PDF Viewer using browser's built-in renderer -->
+                    <iframe src="{{ document.file.url }}" 
+                            style="width: 100%; height: 100%; border: none; background: white;" 
+                            title="PDF Preview"
+                            type="application/pdf">
+                    </iframe>
+                {% else %}
+                    <div class="pdf-placeholder">
+                        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📄</div>
+                        <h3>Document Preview</h3>
+                        <p>No file attached</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <aside class="control-panel">
+            
+            <div class="panel-section">
+                <div class="section-label">Submitted By</div>
+                <div class="student-mini">
+                    <div class="mini-avatar">{{ document.student.user.first_name.0 }}{{ document.student.user.last_name.0 }}</div>
+                    <div>
+                        <h3 style="font-size: 1rem;">{{ document.student.user.get_full_name }}</h3>
+                        <p style="color: var(--text-gray); font-size: 0.85rem;">{{ document.student.student_id }} • {{ document.student.department }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="section-label">Submission Metadata</div>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <label>Category</label>
+                        <span>{{ document.get_category_display }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <label>Date</label>
+                        <span>{{ document.submitted_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <label>File Size</label>
+                        <span>{{ document.file_size|divisibleby:1024 }} KB</span>
+                    </div>
+                    <div class="meta-item">
+                        <label>Current Status</label>
+                        <span class="badge badge-{{ document.status }}">{{ document.get_status_display }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="section-label">Student Remarks</div>
+                <p style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; font-size: 0.9rem; color: var(--text-gray); font-style: italic;">
+                    {{ document.description|default:"No remarks provided by student." }}
+                </p>
+            </div>
+
+            {% if document.status == 'pending' %}
+            <div class="panel-section" style="border-bottom: none;">
+                <div class="section-label">Faculty Validation</div>
+                
+                <form action="{% url 'verification_detail' document.id %}" method="POST">
+                    {% csrf_token %}
+                    <label style="display: block; font-size: 0.85rem; margin-bottom: 5px; color: var(--text-gray);">Faculty Remarks / Feedback</label>
+                    <textarea name="remarks" class="remarks-box" placeholder="Enter comments for the student..."></textarea>
+                    
+                    <button type="submit" name="action" value="approve" class="btn-approve">
+                        ✓ Approve & Verify
+                    </button>
+                    
+                    <button type="submit" name="action" value="reject" class="btn-reject">
+                        ✕ Reject & Request Revision
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div class="panel-section" style="border-bottom: none;">
+                <div class="section-label">Review Completed</div>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <label>Reviewed By</label>
+                        <span>{{ document.reviewed_by.user.get_full_name|default:"N/A" }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <label>Reviewed At</label>
+                        <span>{{ document.reviewed_at|date:"M d, Y H:i"|default:"N/A" }}</span>
+                    </div>
+                </div>
+                {% if document.remarks %}
+                <div style="margin-top: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; margin-bottom: 5px; color: var(--text-gray);">Faculty Remarks</label>
+                    <p style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; font-size: 0.9rem; color: var(--text-gray);">
+                        {{ document.remarks }}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </aside>
+    </div>
+
+</body>
+</html>

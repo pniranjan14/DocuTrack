@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Access | DocuTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- INHERITED VARIABLES (From Index.html) --- */
+        :root {
+            --bg-deep: #020408;
+            --bg-panel: #0d1117;
+            --accent-primary: #00f2ff; 
+            --accent-secondary: #7000ff; 
+            --text-white: #e6edf3;
+            --text-gray: #8b949e;
+            --border-color: #30363d;
+            --glass-bg: rgba(22, 27, 34, 0.7);
+            --error: #ff4b4b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-white);
+            font-family: 'Outfit', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- BACKGROUND FX --- */
+        .fixed-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 50% 10%, rgba(112, 0, 255, 0.1), transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(0, 242, 255, 0.05), transparent 40%);
+            z-index: -1;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: linear-gradient(var(--border-color) 1px, transparent 1px),
+            linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        /* --- LOGIN CARD --- */
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Top glow line */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header { text-align: center; margin-bottom: 2rem; }
+        .logo { 
+            font-family: 'Space Grotesk'; 
+            font-weight: 700; 
+            font-size: 1.5rem; 
+            color: #fff; 
+            text-decoration: none; 
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        .logo span { color: var(--accent-primary); }
+        .header p { color: var(--text-gray); font-size: 0.9rem; }
+
+        /* --- ROLE TOGGLE --- */
+        .role-switch {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .role-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-gray);
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        /* Active State */
+        .role-btn.active {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--accent-primary);
+            border-color: rgba(0, 242, 255, 0.3);
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
+        }
+
+        /* --- FORM ELEMENTS --- */
+        .input-group { margin-bottom: 1.25rem; position: relative; }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            font-family: 'Space Grotesk';
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px rgba(0, 242, 255, 0.1);
+            background: rgba(0, 242, 255, 0.02);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-primary);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-family: 'Space Grotesk';
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            background: #fff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+        }
+
+        /* --- MESSAGES --- */
+        .messages {
+            padding: 10px;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .messages.error {
+            background: rgba(255, 75, 75, 0.1);
+            border: 1px solid rgba(255, 75, 75, 0.3);
+            color: var(--error);
+        }
+
+        /* --- FOOTER LINKS --- */
+        .form-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        .form-footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .form-footer a:hover { color: #fff; text-decoration: underline; }
+
+        /* Dynamic Text Change */
+        .hint-text {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            margin-top: 5px;
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="fixed-bg"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="login-card">
+        <div class="header">
+            <a href="{% url 'index' %}" class="logo">Docu<span>Track.</span></a>
+            <p>Academic Document Management Portal</p>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages error">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="role-switch">
+            <div class="role-btn active" id="btn-student" onclick="setRole('student')">Student</div>
+            <div class="role-btn" id="btn-faculty" onclick="setRole('faculty')">Faculty</div>
+        </div>
+
+        <form action="{% url 'login' %}" method="POST" id="loginForm">
+            {% csrf_token %}
+            <input type="hidden" name="role" id="roleInput" value="student">
+            
+            <div class="input-group">
+                <label class="input-label" id="id-label">Username</label>
+                <input type="text" name="user_id" class="form-control" placeholder="Enter your username" required>
+                <span class="hint-text" id="hint-text">Use your Student ID as username</span>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Authenticate</button>
+        </form>
+
+        <div class="form-footer">
+            <span id="register-text">New to the system? <a href="{% url 'register' %}">Register ID</a></span>
+        </div>
+    </div>
+
+    <script>
+        // Check URL parameters for role (from index page)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlRole = urlParams.get('role');
+
+        if (urlRole === 'faculty') {
+            setRole('faculty');
+        }
+
+        function setRole(role) {
+            const btnStudent = document.getElementById('btn-student');
+            const btnFaculty = document.getElementById('btn-faculty');
+            const form = document.getElementById('loginForm');
+            const idLabel = document.getElementById('id-label');
+            const regText = document.getElementById('register-text');
+            const roleInput = document.getElementById('roleInput');
+            const hintText = document.getElementById('hint-text');
+
+            roleInput.value = role;
+
+            if (role === 'student') {
+                // UI Updates
+                btnStudent.classList.add('active');
+                btnFaculty.classList.remove('active');
+                
+                // Form Logic
+                idLabel.innerText = "Username";
+                hintText.innerText = "Use your Student ID as username";
+                regText.style.display = "block";
+            } else {
+                // UI Updates
+                btnFaculty.classList.add('active');
+                btnStudent.classList.remove('active');
+                
+                // Form Logic
+                idLabel.innerText = "Username";
+                hintText.innerText = "Use your Faculty ID as username";
+                regText.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
