@@ -31,5 +31,14 @@ The user interface is designed with a modern, enterprise-grade aesthetic and inc
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/yourusername/DocuTrack.git](https://github.com/yourusername/DocuTrack.git)
+   git clone [https://github.com/pniranjan14/DocuTrack.git](https://github.com/pniranjan14/DocuTrack.git)
    cd DocuTrack
+   ```
+
+   ## 👨‍💻 Created By
+
+   **P Niranjan**
+
+   - 🌐 [Portfolio](https://niranjan-portfolio-gold.vercel.app/)
+   - 🐙 [GitHub](https://github.com/pniranjan14)
+   - 💼 [LinkedIn](https://www.linkedin.com/in/pniranjannn/)
